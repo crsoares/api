@@ -8,7 +8,7 @@ return array(
 			'wall' => array(
 				'type' => 'Zend\Mvc\Router\Http\Segment',
 				'options' => array(
-					'route' => '/api/wall/[/:id]',
+					'route' => '/api/wall[/:id]',
 					'constraints' => array(
 						'id' => '\w+'
 					),

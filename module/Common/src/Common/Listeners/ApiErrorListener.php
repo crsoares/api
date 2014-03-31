@@ -13,7 +13,7 @@ class ApiErrorListener extends AbstractListenerAggregate
 	{
 		$this->listeners[] = $events->attach(
 								MvcEvent::EVENT_RENDER,
-								'ApiErrorListener::onRender',
+								__CLASS__ . '::onRender',
 								1000
 							 );
 	}
@@ -30,8 +30,8 @@ class ApiErrorListener extends AbstractListenerAggregate
 		$exception = $viewModel->getVariable('exception');
 
 		$model = new JsonModel(array(
-			'errorCode' => $exception->getCode() ?: $httpCode,
-			'errorMsg' => $exception->getMessage(),
+			'errorCode' => !empty($exception) ? $exception->getCode() : $httpCode,
+			'errorMsg' => !empty($exception) ? $exception->getMessage() : null,
 		));
 		$model->setTerminal(true);
 

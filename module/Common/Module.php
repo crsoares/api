@@ -5,6 +5,7 @@ namespace Common;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
+use Zend\EventManager\EventInterface;
 use Zend\Mvc\MvcEvent;
 
 class Module implements ConfigProviderInterface,
@@ -26,7 +27,7 @@ AutoloaderProviderInterface, BootstrapListenerInterface
 		);
 	}
 
-	public function onBootstrap(MvcEvent $e)
+	public function onBootstrap(EventInterface $e)
 	{
 		$app = $e->getTarget();
 		$services = $app->getServiceManager();
