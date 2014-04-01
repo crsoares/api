@@ -9,13 +9,32 @@ class IndexController extends AbstractRestfulController
 {
 	protected $usersTable;
 
+	protected $userStatusesTable;
+
 	public function get($username) 
 	{
 		$usersTable = $this->getUsersTable();
-		$userData = $usersTable->getByUsername($username);
+		$userStatusesTable = $this->getUserStatusesTable();
+
+		$userData = $userTable->getByUsername($username);
+		$userStatuses = $userStatusesTable->getByUserId($userData->id)->toArray();
+
+		$wallData = $userData->getArrayCopy();
+		$wallData['feed'] => $userStatuses;
+
+		usort($wallData['feed'], function($a, $b){
+			$timestampA = strtotime($a['created_at']);
+			$timestampB = strtotime($b['created_at']);
+
+			if($timestampA == $timestampB) {
+				return 0;
+			}
+
+			return ($timestampA > $timestampB) ? -1 : 1;
+		});
 
 		if($userData !== false) {
-			return new JsonModel($userData->getArrayCopy());
+			return new JsonModel($wallData);
 		} else {
 			throw new \Exception('Usuário não encontrado', 404);
 		}
@@ -28,7 +47,27 @@ class IndexController extends AbstractRestfulController
 
 	public function create($data)
 	{
-		$this->methodNotAllowed();
+		$userStatusesTable = $this->getUserStatusesTable();
+
+		$filters = $userStatusesTable->getInputFilter();
+		$filters->setData($data);
+
+		if($filters->isValid()) {
+			$data = $filters->getValues();
+
+			$result = new JsonModel(array(
+				'result' => $userStatusesTable->create(
+					$data['user_id'], $data['status']
+				)
+			));
+		} else {
+			$result = new JsonModel(array(
+				'result' => false,
+				'errors' => $filters->getMessages()
+			));
+		}
+
+		return $result;
 	}
 
 	public function update($id, $data)
@@ -55,5 +94,15 @@ class IndexController extends AbstractRestfulController
 			$this->usersTable = $sm->get('Users\Model\UsersTable');
 		}
 		return $this->usersTable;
+	}
+
+	protected function getUserStatusesTable()
+	{
+		if(!$this->userStatusesTable) {
+			$sm = $this->getServiceLocator();
+			$this->userStatusesTable = $sm->get('Users\Model\UserStatusesTable');
+		}
+
+		return $this->userStatusesTable;
 	}
 }
