@@ -32,6 +32,16 @@ class UserStatusesTable extends AbstractTableGateway implements AdapterAwareInte
         return $this->selectWith($select);
     }
 
+    public function create($userId, $status) 
+    {
+        return $this->insert(array(
+            'user_id' => $userId,
+            'status' => $status,
+            'created_at' => new Expression('NOW()'),
+            'updated_at' => null,
+        ));
+    }
+
 	public function getInputFilter()
 	{
 		$inputFilter = new InputFilter();
