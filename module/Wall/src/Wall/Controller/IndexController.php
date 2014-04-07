@@ -107,6 +107,28 @@ class IndexController extends AbstractRestfulController
 				'errors' => $filters->getMessages(),
 			));
 		}
+	} 
+
+	protected function createStatus($data)
+	{
+		$userStatusesTable = $this->getUserStatusesTable();
+		
+		$filtes = $userStatusesTable->getInputFilter();
+		$filtes->setData($data);
+
+		if($filtes->isValid()) {
+			$data = $filtes->getValues();
+			
+			$result = new JsonModel(array(
+				'result' => $userStatusesTable->create($data['user_id'], $data['status']),
+			));
+		} else {
+			$result = new JsonModel(array(
+				'result' => false,
+				'errors' => $filters->getMessages(),
+			));
+		}
+		return $result;
 	}
 
 	public function getUserImagesTable() 
