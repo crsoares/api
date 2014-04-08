@@ -15,15 +15,13 @@ class IndexController extends AbstractRestfulController
 
 	public function get($username)
 	{
-		$userTable = $this->getUsersTable();
+		$usersTable = $this->getUsersTable();
 		$userStatusesTable = $this->getUserStatusesTable();
 		$userImagesTable = $this->getUserImagesTable();
 
 		$userData = $usersTable->getByUsername($username);
-		$userStatuses = $userStatusesTable->getByUserId(
-			$userData->id,
-		)->toArray();
-		$userImages = $userImagesTable->getByUser($userData->id)->toArray();
+		$userStatuses = $userStatusesTable->getByUserId($userData->id)->toArray();
+		$userImages = $userImagesTable->getByUserId($userData->id)->toArray();
 
 		$wallData = $userData->getArrayCopy();
 		$wallData['feed'] = array_merge($userStatuses, $userImages);
@@ -49,6 +47,8 @@ class IndexController extends AbstractRestfulController
 
 	public function getList() 
 	{
+
+	}
 
 	public function create($data)
 	{
