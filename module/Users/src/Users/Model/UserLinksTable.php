@@ -8,10 +8,11 @@ use Zend\Db\Adapter\AdapterAwareInterface;
 use Zend\Db\Sql\Expression;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
+use Users\Validator\Url;
 
-class UserImagesTable extends AbstractTableGateway implements AdapterAwareInterface
+class UserLinksTable extends AbstractTableGateway implements AdapterAwareInterface
 {
-	protected $table = "user_images";
+	protected $table = "user_links";
 
 	public function setDbAdapter(Adapter $adapter)
 	{
@@ -21,29 +22,20 @@ class UserImagesTable extends AbstractTableGateway implements AdapterAwareInterf
 
 	public function getByUserId($userId)
 	{
-		$select = $this->sql->select()->where(array('user_id' => $userId))->order('created_at DESC');
+		$select = $this->sql()->select()->where(array('user_id' => $userId))->order('created_at DESC');
 		return $this->selectWith($select);
 	}
 
-	public function getByFilename($filename)
-	{
-		$rowset = $this->select(array('filename' => $filename));
-		return $rowset->current();
-	}
 
-	public function getById($id)
-	{
-		$rowset = $this->select(array('id' => $id));
-		return $rowset->current();
-	}
 
-	public function create($userId, $filename)
+	public function create($userId, $url, $title)
 	{
 		return $this->insert(array(
 			'user_id' => $userId,
-			'filename' => $filename,
+			'url' => $url,
+			'title' => $title,
 			'created_at' => new Expression('NOW()'),
-			'updated_at' => null,
+			'updated_at' => null
 		));
 	}
 
@@ -58,7 +50,7 @@ class UserImagesTable extends AbstractTableGateway implements AdapterAwareInterf
 			'filters' => array(
 				array('name' => 'StripTags'),
 				array('name' => 'StringTrim'),
-				array('name' => 'Int'),
+				array('name' => 'Int')
 			),
 			'validators' => array(
 				array('name' => 'NotEmpty'),
@@ -68,9 +60,28 @@ class UserImagesTable extends AbstractTableGateway implements AdapterAwareInterf
 					'options' => array(
 						'table' => 'users',
 						'field' => 'id',
-						'adapter' => $this->adapter,
+						'adapter' => $this->adapter
 					)
 				)
+			)
+		)));
+
+		$inputFilter->add($factory->createInput(array(
+			'name' => 'url',
+			'required' => true,
+			'filters' => array(
+				array('name' => 'StripTags'),
+				array('name' => 'StringTrim')
+			),
+			'validators' => array(
+				array('name' => 'NotEmpty'),
+				array(
+					'name' => 'StringLength',
+					'options' => array(
+						'max' => 2048
+					)
+				),
+				array('name' => '\Users\Validator\Url');
 			)
 		)));
 

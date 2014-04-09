@@ -7,7 +7,8 @@ return array(
 		'services' => array(
 			'Users\Model\UsersTable' => 'Users\Model\UsersTable',
 			'Users\Model\UserStatusesTable' => 'Users\Model\UserStatusesTable',
-			'Users\Model\UserImagesTable' => 'Users\Model\UserImagesTable'
+			'Users\Model\UserImagesTable' => 'Users\Model\UserImagesTable',
+			'Users\Model\UserLinksTable' => 'Users\Model\UserLinksTable',
 		)
 	)
 );
