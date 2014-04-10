@@ -10,7 +10,10 @@ use Zend\InputFilter\Factory as InputFactory;
 
 class UserStatusesTable extends AbstractTableGateway implements AdapterAwareInterface
 {
-	const COMMENT_TYPE_ID = 1;
+    /**
+     * Hold the entity id used for comments
+     */
+    const COMMENT_TYPE_ID = 1;
     
     /**
      * Hold the table name
@@ -19,32 +22,56 @@ class UserStatusesTable extends AbstractTableGateway implements AdapterAwareInte
      */
     protected $table = 'user_statuses';
     const TABLE_NAME = 'user_statuses';
-
-	public function setDbAdapter(Adapter $adapter)
+    
+    /**
+     * Set db adapter
+     *
+     * @param Adapter $adapter
+     */
+    public function setDbAdapter(Adapter $adapter)
     {
         $this->adapter = $adapter;
         $this->initialize();
     }
-
-	public function getByUserId($userId)
+    
+    /**
+     * Method to get statuses by userId
+     *
+     * @param int $userId
+     * @return Zend\Db\ResultSet\ResultSet
+     */
+    public function getByUserId($userId)
     {
         $select = $this->sql->select()->where(array('user_id' => $userId))->order('created_at DESC');
         return $this->selectWith($select);
     }
-
-    public function create($userId, $status) 
+    
+    /**
+     * Method to insert a status to a user
+     *
+     * @param int $userId
+     * @param string $status
+     * @return boolean
+     */
+    public function create($userId, $status)
     {
         return $this->insert(array(
             'user_id' => $userId,
             'status' => $status,
             'created_at' => new Expression('NOW()'),
-            'updated_at' => null,
+            'updated_at' => null
         ));
     }
-
-	public function getInputFilter()
-	{
-		$inputFilter = new InputFilter();
+    
+    /**
+     * Return a configured input filter to be able to validate and
+     * filter the data.
+     *
+     * @return InputFilter
+     */
+    public function getInputFilter()
+    {
+        $inputFilter = new InputFilter();
         $factory = new InputFactory();
         
         $inputFilter->add($factory->createInput(array(
@@ -90,5 +117,5 @@ class UserStatusesTable extends AbstractTableGateway implements AdapterAwareInte
         )));
         
         return $inputFilter;
-	}
+    }
 }

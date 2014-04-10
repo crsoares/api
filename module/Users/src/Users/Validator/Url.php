@@ -6,25 +6,34 @@ use Zend\Validator\AbstractValidator;
 
 class Url extends AbstractValidator
 {
-	const INVALID = 'urlInvalid';
+    const INVALID   = 'urlInvalid';
 
-	protected $messageTemplates = array(
-		self::INVALID => 'Url inválido dado'
-	);
+    /**
+     * @var array
+     */
+    protected $messageTemplates = array(
+        self::INVALID   => "Invalid url given"
+    );
 
-	public function isValid($value)
-	{
-		if(!is_string($value)) {
-			$this->error(self::INVALID);
-			return false;
-		}
-
-		$this->setValue($value);
-		if(!filter_var($value, FILTER_VALIDATE_URL)) {
-			$this->error(self::INVALID);
-			return false;
-		}
-
-		return true;
-	}
+    /**
+     * Returns true if the given string is a valid url
+     *
+     * @param string $value 
+     * @return boolean
+     */
+    public function isValid($value)
+    {
+        if (!is_string($value)) {
+            $this->error(self::INVALID);
+            return false;
+        }
+        
+        $this->setValue($value);
+        if(!filter_var($value, FILTER_VALIDATE_URL)) {
+            $this->error(self::INVALID);
+            return false;
+        }
+        
+        return true;
+    }
 }
